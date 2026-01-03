@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-cyber-cyan text-cyber-darker font-semibold rounded-lg
+           hover:bg-cyber-blue transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-cyber-cyan focus:ring-offset-2 focus:ring-offset-cyber-darker;
+  }
+
+  .btn-outline {
+    @apply px-4 py-2 border border-cyber-cyan text-cyber-cyan font-semibold rounded-lg
+           hover:bg-cyber-cyan hover:text-cyber-darker transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-cyber-cyan focus:ring-offset-2 focus:ring-offset-cyber-darker;
+  }
+
+  .card {
+    @apply bg-cyber-gray border border-cyber-light rounded-xl p-6 shadow-lg;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-cyber-darker border border-cyber-light rounded-lg
+           text-white placeholder-gray-500
+           focus:outline-none focus:border-cyber-cyan focus:ring-1 focus:ring-cyber-cyan
+           transition-colors duration-200;
+  }
+
+  .message-user {
+    @apply bg-cyber-light border border-cyber-blue/30 rounded-2xl rounded-br-md p-4;
+  }
+
+  .message-wolf {
+    @apply bg-cyber-gray border-l-4 border-cyber-cyan rounded-2xl rounded-bl-md p-4;
+  }
+
+  .glow-text {
+    @apply text-cyber-cyan drop-shadow-[0_0_10px_rgba(0,255,255,0.5)];
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.cyber.light') transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: theme('colors.cyber.light');
+    border-radius: 3px;
+  }
+}
