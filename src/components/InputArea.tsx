@@ -1,7 +1,7 @@
-import { useState, useRef, type KeyboardEvent, type ChangeEvent } from 'react'
-import { Send, Paperclip, Image, X, Loader2 } from 'lucide-react'
+import { useState, useRef, useEffect, type KeyboardEvent, type ChangeEvent } from 'react'
+import { Send, Paperclip, X } from 'lucide-react'
 import type { Message } from '../types'
-import { generateInfographic } from '../services/imageService'
+import ImageGeneratorModal from './ImageGeneratorModal'
 
 interface InputAreaProps {
   onSend: (content: string, images?: { data: string; mimeType: string }[]) => Promise<void>
@@ -12,9 +12,15 @@ interface InputAreaProps {
 export default function InputArea({ onSend, disabled, messages }: InputAreaProps) {
   const [input, setInput] = useState('')
   const [attachedImages, setAttachedImages] = useState<{ data: string; mimeType: string }[]>([])
-  const [isGeneratingImage, setIsGeneratingImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Auto-focus on mount and after sending
+  useEffect(() => {
+    if (!disabled && textareaRef.current) {
+      textareaRef.current.focus()
+    }
+  }, [disabled, messages.length])
 
   const handleSubmit = async () => {
     if ((!input.trim() && attachedImages.length === 0) || disabled) return
@@ -64,24 +70,11 @@ export default function InputArea({ onSend, disabled, messages }: InputAreaProps
     setAttachedImages((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleGenerateInfographic = async () => {
-    if (messages.length < 2 || isGeneratingImage) return
-
-    setIsGeneratingImage(true)
-
-    try {
-      const imageData = await generateInfographic(messages)
-
-      // Send as a message with the generated image
-      await onSend('Generated an infographic based on our conversation:', [
-        { data: imageData, mimeType: 'image/png' },
-      ])
-    } catch (error) {
-      console.error('Failed to generate infographic:', error)
-      // Could show a toast/notification here
-    } finally {
-      setIsGeneratingImage(false)
-    }
+  const handleImageGenerated = async (imageData: string) => {
+    // Send the generated image as a message
+    await onSend('Generated a custom infographic:', [
+      { data: imageData, mimeType: 'image/png' },
+    ])
   }
 
   // Auto-resize textarea
@@ -137,19 +130,11 @@ export default function InputArea({ onSend, disabled, messages }: InputAreaProps
           className="hidden"
         />
 
-        {/* Infographic button */}
-        <button
-          onClick={handleGenerateInfographic}
-          disabled={disabled || messages.length < 2 || isGeneratingImage}
-          className="flex-shrink-0 p-2 text-gray-400 hover:text-cyber-magenta disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          title="Generate infographic from conversation"
-        >
-          {isGeneratingImage ? (
-            <Loader2 size={20} className="animate-spin" />
-          ) : (
-            <Image size={20} />
-          )}
-        </button>
+        {/* Image Generator Modal */}
+        <ImageGeneratorModal
+          onImageGenerated={handleImageGenerated}
+          disabled={disabled}
+        />
 
         {/* Text input */}
         <div className="flex-1 relative">

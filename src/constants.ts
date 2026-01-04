@@ -13,7 +13,7 @@ export const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || ''
 
 export const MODELS = {
   chat: 'gemini-2.0-flash',
-  image: 'gemini-2.0-flash-exp',
+  image: 'imagen-3.0-generate-002', // Imagen for high-quality image generation
 } as const
 
 // Storage Keys

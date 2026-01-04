@@ -21,6 +21,7 @@ import {
 import LoginGate from './LoginGate'
 import ChatInterface from './ChatInterface'
 import Sidebar from './Sidebar'
+import { Particles } from './ui/particles'
 import { Menu, X } from 'lucide-react'
 
 export default function App() {
@@ -243,7 +244,16 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-cyber-darker flex">
+    <div className="min-h-screen bg-cyber-darker flex relative">
+      {/* Animated particles background */}
+      <Particles
+        className="absolute inset-0"
+        quantity={100}
+        ease={80}
+        color="#00FFFF"
+        refresh={false}
+      />
+
       {/* Mobile menu button */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -266,7 +276,7 @@ export default function App() {
       />
 
       {/* Main chat area */}
-      <main className="flex-1 flex flex-col min-h-screen lg:ml-80">
+      <main className="flex-1 flex flex-col min-h-screen lg:ml-80 relative z-10">
         <ChatInterface
           messages={currentSession?.history || []}
           onSendMessage={handleSendMessage}

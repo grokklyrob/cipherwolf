@@ -3,6 +3,7 @@ import type { Message } from '../types'
 import { streamMessage } from '../services/geminiService'
 import MarkdownMessage from './MarkdownMessage'
 import InputArea from './InputArea'
+import ImageDisplay from './ImageDisplay'
 import { Bot, User } from 'lucide-react'
 
 interface ChatInterfaceProps {
@@ -171,26 +172,30 @@ function MessageBubble({ message }: MessageBubbleProps) {
         )}
       </div>
 
-      <div className={`flex-1 max-w-[80%] ${isUser ? 'message-user' : 'message-wolf'}`}>
-        {/* Images */}
-        {message.images && message.images.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-2">
-            {message.images.map((img, index) => (
-              <img
-                key={index}
-                src={`data:${img.mimeType};base64,${img.data}`}
-                alt={`Uploaded image ${index + 1}`}
-                className="max-w-[200px] max-h-[200px] rounded-lg object-cover"
-              />
-            ))}
+      <div className={`flex-1 ${isUser ? 'message-user' : 'message-wolf'}`}>
+        {/* Content */}
+        {message.content && (
+          <div className={message.images && message.images.length > 0 ? 'mb-3' : ''}>
+            {isUser ? (
+              <p className="text-gray-200 whitespace-pre-wrap">{message.content}</p>
+            ) : (
+              <MarkdownMessage content={message.content} />
+            )}
           </div>
         )}
 
-        {/* Content */}
-        {isUser ? (
-          <p className="text-gray-200 whitespace-pre-wrap">{message.content}</p>
-        ) : (
-          <MarkdownMessage content={message.content} />
+        {/* Images - Full size display */}
+        {message.images && message.images.length > 0 && (
+          <div className="space-y-3 max-w-3xl">
+            {message.images.map((img, index) => (
+              <ImageDisplay
+                key={index}
+                data={img.data}
+                mimeType={img.mimeType}
+                index={index}
+              />
+            ))}
+          </div>
         )}
       </div>
     </div>

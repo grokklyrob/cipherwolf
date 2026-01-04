@@ -22,12 +22,10 @@ function extractContext(messages: Message[], count: number = 3): string {
 }
 
 export async function generateInfographic(
-  messages: Message[],
+  messagesOrPrompt: Message[] | string,
   style: 'blueprint' | 'schematic' | 'diagram' = 'blueprint'
 ): Promise<string> {
   const client = getClient()
-
-  const context = extractContext(messages)
 
   const styleDescriptions = {
     blueprint: 'a high-tech blueprint style with cyan/blue lines on dark background, technical annotations, and a futuristic aesthetic',
@@ -35,7 +33,11 @@ export async function generateInfographic(
     diagram: 'a clean educational diagram with clear labels, color-coded sections, and modern flat design',
   }
 
-  const prompt = `Create an educational infographic about the following robotics/programming topic.
+  let prompt: string
+
+  if (typeof messagesOrPrompt === 'string') {
+    // Standalone prompt
+    prompt = `Create an educational infographic about: ${messagesOrPrompt}
 
 Style: ${styleDescriptions[style]}
 
@@ -45,17 +47,33 @@ The infographic should be:
 - Have clear, readable text labels
 - Use a dark theme with cyan (#00FFFF) and blue (#0080FF) accents
 - Be suitable for learning robotics and programming concepts
+- High resolution and detailed`
+  } else {
+    // Context-based generation
+    const context = extractContext(messagesOrPrompt)
+    prompt = `Create an educational infographic about the following robotics/programming topic.
+
+Style: ${styleDescriptions[style]}
+
+The infographic should be:
+- Visually appealing for teenagers
+- Include relevant icons and illustrations
+- Have clear, readable text labels
+- Use a dark theme with cyan (#00FFFF) and blue (#0080FF) accents
+- Be suitable for learning robotics and programming concepts
+- High resolution and detailed
 
 Topic context from recent conversation:
 ${context}
 
 Generate an infographic that helps visualize and summarize the key concepts discussed.`
+  }
 
   const response = await client.models.generateContent({
     model: MODELS.image,
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     config: {
-      responseModalities: ['image', 'text'],
+      responseModalities: ['image'],
     },
   })
 
